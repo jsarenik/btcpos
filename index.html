@@ -31,6 +31,20 @@
             width: 100%;
         }
 
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .left-section {
+            order: 1;
+        }
+
+        .right-section {
+            order: 2;
+        }
+
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -83,14 +97,16 @@
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 10px;
-            text-align: right;
-            min-height: 70px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: baseline;
         }
 
         .currency-symbol {
             color: #6c757d;
-            font-size: 24px;
+            font-size: 14px;
             font-weight: 500;
+            margin-bottom: 5px;
         }
 
         .amount {
@@ -98,6 +114,27 @@
             font-size: 36px;
             font-weight: bold;
             font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: baseline;
+            justify-content: flex-end;
+        }
+
+        .amount-value {
+            text-align: right;
+            min-width: 150px;
+            color: #212529;
+            font-size: 36px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .currency-code {
+            font-size: 18px;
+            margin-left: 8px;
+            color: #6c757d;
+            font-weight: 500;
+            min-width: 50px;
+            flex-shrink: 0;
         }
 
         .satoshi-display {
@@ -106,7 +143,9 @@
             border-radius: 10px;
             padding: 15px 20px;
             margin-bottom: 20px;
-            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            align-items: baseline;
         }
 
         .satoshi-label {
@@ -121,11 +160,26 @@
             font-size: 24px;
             font-weight: bold;
             font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: baseline;
+            justify-content: flex-end;
+        }
+
+        .satoshi-value {
+            text-align: right;
+            min-width: 150px;
+            color: #856404;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
         }
 
         .satoshi-symbol {
             font-size: 14px;
-            margin-left: 5px;
+            margin-left: 8px;
+            color: #856404;
+            min-width: 50px;
+            flex-shrink: 0;
         }
 
         .description-section {
@@ -159,7 +213,14 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
+        }
+
+        .keypad-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .key {
@@ -190,19 +251,19 @@
             grid-column: span 2;
         }
 
-        .key.action {
-            background: #667eea;
+        .key.secondary {
+            background: #6c757d;
             color: white;
-            border-color: #667eea;
+            border-color: #6c757d;
         }
 
-        .key.action:hover {
-            background: #5568d3;
-            border-color: #5568d3;
+        .key.secondary:hover {
+            background: #5a6268;
+            border-color: #5a6268;
         }
 
-        .key.action:active {
-            background: #4c5ec4;
+        .key.secondary:active {
+            background: #545b62;
         }
 
         .key.danger {
@@ -249,6 +310,46 @@
             transform: none;
         }
 
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1000px;
+            }
+
+            .content-wrapper {
+                flex-direction: row;
+                gap: 30px;
+                align-items: flex-start;
+            }
+
+            .left-section {
+                flex: 1;
+                order: 1;
+            }
+
+            .right-section {
+                flex: 1;
+                order: 2;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .header {
+                margin-bottom: 30px;
+            }
+
+            .keypad {
+                margin-bottom: 12px;
+            }
+
+            .keypad-actions {
+                margin-bottom: 12px;
+            }
+
+            .submit-button {
+                margin-top: 0;
+            }
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
@@ -273,50 +374,56 @@
             <h1>Bitcoin POS</h1>
         </div>
 
-        <div class="currency-selector">
-            <label for="currency">Currency</label>
-            <select id="currency" class="currency-select">
-                <option value="USD">🇺🇸 USD - US Dollar</option>
-                <option value="EUR">🇪🇺 EUR - Euro</option>
-            </select>
-        </div>
+        <div class="content-wrapper">
+            <div class="left-section">
+                <div class="currency-selector">
+                    <label for="currency">Currency</label>
+                    <select id="currency" class="currency-select">
+                        <option value="USD">🇺🇸 USD - US Dollar</option>
+                        <option value="EUR">🇪🇺 EUR - Euro</option>
+                    </select>
+                </div>
 
-        <div class="display">
-            <div class="currency-symbol" id="currency-label">USD Amount</div>
-            <div class="amount" id="amount">0.00</div>
-        </div>
+                <div class="display">
+                    <span class="amount-value" id="amount">0.00</span>
+                    <span class="currency-code" id="currency-code">USD</span>
+                </div>
 
-        <div class="satoshi-display">
-            <div class="satoshi-label">Bitcoin Amount</div>
-            <div class="satoshi-amount">
-                <span id="satoshi-amount">0</span>
-                <span class="satoshi-symbol">sats</span>
+                <div class="satoshi-display">
+                    <span class="satoshi-value" id="satoshi-amount">0</span>
+                    <span class="satoshi-symbol">sats</span>
+                </div>
+
+                <div class="description-section">
+                    <label for="description">Description (optional)</label>
+                    <input type="text" id="description" class="description-input"
+                        placeholder="e.g., Coffee, Sandwich..." maxlength="100">
+                </div>
+            </div>
+
+            <div class="right-section">
+                <div class="keypad">
+                    <button class="key" data-value="1">1</button>
+                    <button class="key" data-value="2">2</button>
+                    <button class="key" data-value="3">3</button>
+                    <button class="key" data-value="4">4</button>
+                    <button class="key" data-value="5">5</button>
+                    <button class="key" data-value="6">6</button>
+                    <button class="key" data-value="7">7</button>
+                    <button class="key" data-value="8">8</button>
+                    <button class="key" data-value="9">9</button>
+                    <button class="key zero" data-value="0">0</button>
+                    <button class="key" data-value=".">.</button>
+                </div>
+
+                <div class="keypad-actions">
+                    <button class="key danger" id="backspace">⌫</button>
+                    <button class="key secondary" id="clear">Clear</button>
+                </div>
+
+                <button class="submit-button" id="submit">Create Invoice</button>
             </div>
         </div>
-
-        <div class="description-section">
-            <label for="description">Description (optional)</label>
-            <input type="text" id="description" class="description-input" placeholder="e.g., Coffee, Sandwich..."
-                maxlength="100">
-        </div>
-
-        <div class="keypad">
-            <button class="key" data-value="1">1</button>
-            <button class="key" data-value="2">2</button>
-            <button class="key" data-value="3">3</button>
-            <button class="key" data-value="4">4</button>
-            <button class="key" data-value="5">5</button>
-            <button class="key" data-value="6">6</button>
-            <button class="key" data-value="7">7</button>
-            <button class="key" data-value="8">8</button>
-            <button class="key" data-value="9">9</button>
-            <button class="key zero" data-value="0">0</button>
-            <button class="key" data-value=".">.</button>
-            <button class="key danger" id="backspace">⌫</button>
-            <button class="key action" id="clear">Clear</button>
-        </div>
-
-        <button class="submit-button" id="submit">Create Invoice</button>
     </div>
 
     <script>
@@ -325,7 +432,7 @@
         let currentCurrency = 'USD';
         const amountDisplay = document.getElementById('amount');
         const satoshiDisplay = document.getElementById('satoshi-amount');
-        const currencyLabel = document.getElementById('currency-label');
+        const currencyCode = document.getElementById('currency-code');
         const currencySelect = document.getElementById('currency');
         const descriptionInput = document.getElementById('description');
         const submitButton = document.getElementById('submit');
@@ -377,9 +484,9 @@
             }
         }
 
-        // Update currency label
-        function updateCurrencyLabel() {
-            currencyLabel.textContent = `${currentCurrency} Amount`;
+        // Update currency code
+        function updateCurrencyCode() {
+            currencyCode.textContent = currentCurrency;
         }
 
         // Handle number and decimal point input
@@ -440,7 +547,7 @@
         // Handle currency change
         currencySelect.addEventListener('change', (e) => {
             currentCurrency = e.target.value;
-            updateCurrencyLabel();
+            updateCurrencyCode();
             formatDisplay(); // Recalculate satoshis with new currency
         });
 
@@ -499,7 +606,7 @@
         submitButton.addEventListener('click', handleSubmit);
 
         // Initialize display
-        updateCurrencyLabel();
+        updateCurrencyCode();
         formatDisplay();
     </script>
 </body>
