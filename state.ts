@@ -11,6 +11,7 @@ const _state: {
     wollet: lwk.Wollet | null;
     currencyCode: lwk.CurrencyCode | null;
     boltzSession: lwk.BoltzSession | null;
+    invoiceResponse: lwk.InvoiceResponse | null;
     exchangeRate: number | null;
     wasmReady: boolean;
 } = {
@@ -28,6 +29,9 @@ const _state: {
 
     // Boltz session for lightning swaps
     boltzSession: null,
+
+    // Current invoice response from Boltz
+    invoiceResponse: null,
 
     // Current exchange rate (BTC price in the selected currency)
     exchangeRate: null,
@@ -137,6 +141,17 @@ export function setBoltzSession(boltzSession: lwk.BoltzSession | null): lwk.Bolt
     _state.boltzSession = boltzSession;
     publish('boltz-session-changed', boltzSession);
     return _state.boltzSession;
+}
+
+// InvoiceResponse state management
+export function getInvoiceResponse(): lwk.InvoiceResponse | null {
+    return _state.invoiceResponse;
+}
+
+export function setInvoiceResponse(invoiceResponse: lwk.InvoiceResponse | null): lwk.InvoiceResponse | null {
+    _state.invoiceResponse = invoiceResponse;
+    publish('invoice-response-changed', invoiceResponse);
+    return _state.invoiceResponse;
 }
 
 // Exchange rate state management

@@ -5,6 +5,7 @@ import {
     setPricesFetcher, getPricesFetcher,
     setEsploraClient, getEsploraClient,
     setBoltzSession, getBoltzSession,
+    setInvoiceResponse, getInvoiceResponse,
     setExchangeRate, getExchangeRate,
     setWasmReady, isWasmReady,
     subscribe
@@ -212,7 +213,7 @@ async function createEsploraClient(): Promise<lwk.EsploraClient> {
     const url = network.isMainnet() ? MAINNET_WATERFALLS_URL : TESTNET_WATERFALLS_URL;
     const waterfalls = true;
     const concurrency = 4;
-    const utxoOnly = false;
+    const utxoOnly = true;
 
     const client = new lwk.EsploraClient(network, url, waterfalls, concurrency, utxoOnly);
 
@@ -405,6 +406,9 @@ function initSetupPage(): void {
 function initPosPage(config: POSConfig): void {
     renderTemplate('pos-page-template');
 
+    // Save config for returning from receive page
+    currentPosConfig = config;
+
     // POS state
     let currentAmount: string = '0';
     let inputMode: 'fiat' | 'sats' = 'fiat';
@@ -594,7 +598,7 @@ function initPosPage(config: POSConfig): void {
     }
 
     // Handle submit
-    function handleSubmit(): void {
+    async function handleSubmit() {
         const satoshis = getFinalSatoshis();
         const fiatAmount = getFinalFiat();
         const description = descriptionInput.value.trim();
@@ -604,24 +608,41 @@ function initPosPage(config: POSConfig): void {
             return;
         }
 
-        // Invoice data (will be used for Boltz integration later)
-        const invoiceData = {
-            fiatAmount: fiatAmount,
-            currency: currencyAlpha3,
-            satoshis: satoshis,
-            description: description || null,
-            timestamp: new Date().toISOString()
-        };
+        // Show loading state on button
+        submitButton.disabled = true;
+        const originalText = submitButton.textContent;
+        submitButton.innerHTML = '<span class="button-loading"><span class="spinner"></span>Creating...</span>';
 
-        console.log('Invoice data:', invoiceData);
+        try {
+            // Invoice data (will be used for Boltz integration later)
+            const invoiceData = {
+                fiatAmount: fiatAmount,
+                currency: currencyAlpha3,
+                satoshis: satoshis,
+                description: description || null,
+                timestamp: new Date().toISOString()
+            };
 
-        // For now, show confirmation
-        alert(`Invoice created!\n${currencyAlpha3}: ${fiatAmount.toFixed(2)}\nSatoshis: ${satoshis.toLocaleString('en-US')}\nDescription: ${description || 'None'}`);
+            console.log('Invoice data:', invoiceData);
+            const claimAddress = await getClaimAddress();
+            console.log('Claim address:', claimAddress.toString());
 
-        // Reset
-        currentAmount = '0';
-        descriptionInput.value = '';
-        formatDisplay();
+            const invoice = await getBoltzSession().invoice(BigInt(satoshis), description, claimAddress);
+            console.log('Invoice:', invoice.bolt11Invoice().toString());
+            setInvoiceResponse(invoice);
+
+            // Navigate to receive page
+            initReceivePage(invoice, satoshis, fiatAmount, currencyAlpha3);
+
+            // Reset amount for next payment
+            currentAmount = '0';
+        } catch (e) {
+            console.error('Failed to create invoice:', e);
+            alert(`Failed to create invoice: ${e}`);
+            // Restore button state
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+        }
     }
 
     // Remove trailing zeros from a number string (e.g., "123.40" -> "123.4", "123.00" -> "123")
@@ -704,10 +725,37 @@ function initPosPage(config: POSConfig): void {
     // Initialize async parts (wallet, esplora client, boltz session, exchange rate)
     async function initWalletAsync(): Promise<void> {
         try {
+            // Check if we already have a valid session in state
+            let esploraClient = getEsploraClient();
+            let wollet = getWollet();
+            let boltzSession = getBoltzSession();
+
+            // If all components exist and wallet descriptor matches, reuse them
+            if (esploraClient && wollet && boltzSession) {
+                const existingDwid = wollet.dwid();
+                const newDescriptor = new lwk.WolletDescriptor(config.d);
+                const newWollet = new lwk.Wollet(network, newDescriptor);
+                const newDwid = newWollet.dwid();
+
+                if (existingDwid === newDwid) {
+                    console.log('Reusing existing wallet and Boltz session');
+                    walletIdDisplay.textContent = existingDwid;
+
+                    // Start rate updates (in case they were stopped)
+                    startRateUpdates();
+
+                    // Hide loading status
+                    wasmStatus.classList.add('hidden');
+                    return;
+                }
+                // Different descriptor, need to reinitialize
+                console.log('Descriptor changed, reinitializing...');
+            }
+
             updateStatusText('Creating Esplora client...');
 
             // Create Esplora client with waterfalls
-            const esploraClient = await createEsploraClient();
+            esploraClient = await createEsploraClient();
             setEsploraClient(esploraClient);
             console.log('Esplora client created with waterfalls');
 
@@ -715,7 +763,8 @@ function initPosPage(config: POSConfig): void {
 
             // Create wallet descriptor and wallet
             const wolletDescriptor = new lwk.WolletDescriptor(config.d);
-            const wollet = new lwk.Wollet(network, wolletDescriptor);
+            wollet = new lwk.Wollet(network, wolletDescriptor);
+            await syncWallet(wollet);
             setWollet(wollet);
 
             // Show full wallet ID at bottom
@@ -726,7 +775,7 @@ function initPosPage(config: POSConfig): void {
             updateStatusText('Creating Boltz session...');
 
             // Create Boltz session for lightning swaps
-            const boltzSession = await createBoltzSession(wollet, esploraClient);
+            boltzSession = await createBoltzSession(wollet, esploraClient);
             setBoltzSession(boltzSession);
             console.log('Boltz session created');
 
@@ -775,6 +824,126 @@ function initPosPage(config: POSConfig): void {
 }
 
 // =============================================================================
+// Complete Pay Background Task
+// =============================================================================
+
+/**
+ * Spawn a background task to complete a swap payment
+ * @param invoice - The InvoiceResponse from Boltz
+ * @param onComplete - Callback when payment completes
+ */
+function spawnCompletePay(invoice: lwk.InvoiceResponse, onComplete: (success: boolean) => void): void {
+    setTimeout(async () => {
+        try {
+            console.log("Starting completePay in background...");
+            const swapId = invoice.swapId();
+            console.log("Swap ID:", swapId);
+            const completed = await invoice.completePay();
+            console.log("completePay finished with result:", completed);
+            onComplete(completed);
+        } catch (error) {
+            console.error("Error in completePay:", error);
+            onComplete(false);
+        }
+    }, 0);
+}
+
+// =============================================================================
+// Receive Page
+// =============================================================================
+
+// Store the current config for returning to POS
+let currentPosConfig: POSConfig | null = null;
+
+function initReceivePage(invoice: lwk.InvoiceResponse, satoshis: number, fiatAmount: number, currencyAlpha3: string): void {
+    renderTemplate('receive-page-template');
+
+    // Get DOM elements
+    const receiveSats = document.getElementById('receive-sats') as HTMLSpanElement;
+    const receiveFiat = document.getElementById('receive-fiat') as HTMLSpanElement;
+    const invoiceQr = document.getElementById('invoice-qr') as HTMLImageElement;
+    const invoiceText = document.getElementById('invoice-text') as HTMLTextAreaElement;
+    const copyInvoiceButton = document.getElementById('copy-invoice') as HTMLButtonElement;
+    const backToPosButton = document.getElementById('back-to-pos') as HTMLButtonElement;
+    const walletIdDisplay = document.getElementById('wallet-id') as HTMLSpanElement;
+    const wasmStatus = document.getElementById('wasm-status') as HTMLDivElement;
+    const statusIndicator = wasmStatus.querySelector('.status-indicator') as HTMLElement;
+    const statusText = wasmStatus.querySelector('.status-text') as HTMLElement;
+
+    // Get the bolt11 invoice
+    const bolt11 = invoice.bolt11Invoice().toString();
+
+    // Display amounts
+    receiveSats.textContent = `${satoshis.toLocaleString('en-US')} sats`;
+    receiveFiat.textContent = `≈ ${currencyAlpha3} ${fiatAmount.toFixed(2)}`;
+
+    // Generate QR code with lightning: prefix and uppercase bolt11
+    const lightningUri = `lightning:${bolt11.toUpperCase()}`;
+    const qrUri = lwk.stringToQr(lightningUri);
+    invoiceQr.src = qrUri;
+
+    // Display invoice text (lowercase for copy/paste)
+    invoiceText.value = bolt11;
+
+    // Show wallet ID
+    const wollet = getWollet();
+    if (wollet) {
+        walletIdDisplay.textContent = wollet.dwid();
+    }
+
+    // Copy invoice button
+    copyInvoiceButton.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(bolt11);
+            copyInvoiceButton.textContent = '✓';
+            setTimeout(() => {
+                copyInvoiceButton.textContent = '📋';
+            }, 2000);
+        } catch {
+            invoiceText.select();
+            document.execCommand('copy');
+        }
+    });
+
+    // Back to POS button
+    backToPosButton.addEventListener('click', () => {
+        // Clear the invoice
+        setInvoiceResponse(null);
+        // Return to POS page
+        if (currentPosConfig) {
+            initPosPage(currentPosConfig);
+        }
+    });
+
+    // Spawn background task to wait for payment completion
+    spawnCompletePay(invoice, (success: boolean) => {
+        if (success) {
+            // Payment completed successfully
+            statusIndicator.classList.remove('loading');
+            statusIndicator.classList.add('ready');
+            statusText.textContent = 'Payment received!';
+            backToPosButton.textContent = '✓ New Payment';
+            backToPosButton.classList.remove('secondary-button');
+
+            // Replace QR code with checkmark SVG
+            const checkmarkSvg = `data:image/svg+xml,${encodeURIComponent(`
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                    <circle cx="100" cy="100" r="90" fill="#22c55e"/>
+                    <path d="M60 100 L90 130 L140 70" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            `)}`;
+            invoiceQr.classList.add('payment-success');
+            invoiceQr.src = checkmarkSvg;
+        } else {
+            // Payment failed or timed out
+            statusIndicator.classList.remove('loading');
+            statusIndicator.classList.add('error');
+            statusText.textContent = 'Payment failed or expired';
+        }
+    });
+}
+
+// =============================================================================
 // Error Page
 // =============================================================================
 
@@ -819,6 +988,21 @@ function route(): void {
 
     // Show POS page
     initPosPage(config);
+}
+
+async function getClaimAddress(): Promise<lwk.Address> {
+    const wollet = getWollet();
+    syncWallet(wollet);
+    const claimAddress = wollet.address(null).address();
+    return claimAddress;
+}
+
+async function syncWallet(wollet: lwk.Wollet): Promise<void> {
+    const client = getEsploraClient();
+    const update = await client.fullScan(wollet);
+    if (update) {
+        wollet.applyUpdate(update);
+    }
 }
 
 // =============================================================================

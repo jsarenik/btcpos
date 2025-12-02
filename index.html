@@ -159,7 +159,53 @@
         </div>
 
         <footer class="pos-footer">
-            <span class="wallet-id" id="wallet-id" title="Wallet ID"></span>
+            <span class="wallet-id" id="wallet-id" title="Wallet ID">Loading wallet...</span>
+        </footer>
+    </template>
+
+    <!-- Receive Page Template -->
+    <template id="receive-page-template">
+        <div class="header">
+            <div class="header-row">
+                <div class="bitcoin-symbol">₿</div>
+                <h1>Payment Request</h1>
+            </div>
+        </div>
+
+        <div class="receive-container">
+            <div class="amount-summary">
+                <div class="amount-row">
+                    <span class="amount-label">Amount</span>
+                    <span class="amount-sats" id="receive-sats">0 sats</span>
+                </div>
+                <div class="amount-row secondary">
+                    <span class="amount-fiat" id="receive-fiat">≈ $0.00</span>
+                </div>
+            </div>
+
+            <div class="qr-section">
+                <img id="invoice-qr" alt="Lightning Invoice QR"
+                    style="image-rendering: pixelated; border: 16px solid white; width: 240px; height: 240px;">
+            </div>
+
+            <div class="invoice-section">
+                <label for="invoice-text">Lightning Invoice</label>
+                <div class="invoice-display">
+                    <textarea id="invoice-text" class="invoice-textarea" readonly></textarea>
+                    <button type="button" id="copy-invoice" class="copy-button" title="Copy to clipboard">📋</button>
+                </div>
+            </div>
+
+            <button type="button" id="back-to-pos" class="submit-button secondary-button">← New Payment</button>
+        </div>
+
+        <div class="wasm-status" id="wasm-status">
+            <span class="status-indicator loading"></span>
+            <span class="status-text">Waiting for payment...</span>
+        </div>
+
+        <footer class="pos-footer">
+            <span class="wallet-id" id="wallet-id"></span>
         </footer>
     </template>
 

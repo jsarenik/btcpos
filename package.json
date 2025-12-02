@@ -3,7 +3,9 @@
         "start": "webpack-dev-server",
         "build": "rm -rf ./dist && webpack --config webpack.config.js --mode=production",
         "lint": "eslint *.ts **/*.ts",
-        "lint:fix": "eslint *.ts **/*.ts --fix"
+        "lint:fix": "eslint *.ts **/*.ts --fix",
+        "sync": "rsync -avh dist/ root@praga:/var/www/pos.liquidwebwallet.org/ && rsync -avh dist/ root@gandi2:/var/www/pos.liquidwebwallet.org/",
+        "deploy": "npm run build && npm run sync"
     },
     "dependencies": {
         "lwk_wasm": "file:/home/casatta/git/lwk/lwk_wasm/pkg"

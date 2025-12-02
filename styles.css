@@ -119,6 +119,9 @@ body {
     color: #9ca3af;
     word-break: break-all;
     line-height: 1.4;
+    min-height: 32px;
+    /* Reserve space for ~2 lines of DWID */
+    display: block;
 }
 
 /* Loading state */
@@ -335,10 +338,14 @@ body {
     border-radius: 8px;
     font-size: 13px;
     color: #6c757d;
+    min-height: 42px;
+    /* Reserve space to prevent layout shift */
+    transition: opacity 0.2s, visibility 0.2s;
 }
 
 .wasm-status.hidden {
-    display: none;
+    visibility: hidden;
+    opacity: 0;
 }
 
 .status-indicator {
@@ -361,6 +368,12 @@ body {
     background: #dc3545;
 }
 
+.status-text {
+    min-width: 180px;
+    /* Reserve space for status messages */
+    text-align: left;
+}
+
 @keyframes pulse {
 
     0%,
@@ -371,6 +384,124 @@ body {
     50% {
         opacity: 0.5;
     }
+}
+
+/* Receive Page */
+.receive-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.amount-summary {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+    border: 2px solid #f7931a;
+    border-radius: 14px;
+}
+
+.amount-row {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.amount-row.secondary {
+    margin-top: 4px;
+}
+
+.amount-label {
+    font-size: 14px;
+    color: #92400e;
+    font-weight: 500;
+}
+
+.amount-sats {
+    font-size: 28px;
+    font-weight: 700;
+    color: #b45309;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+.amount-fiat {
+    font-size: 16px;
+    color: #92400e;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+.qr-section {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+.qr-section img {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.qr-section img.payment-success {
+    animation: checkmark-pop 0.4s ease-out;
+    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4);
+}
+
+@keyframes checkmark-pop {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.invoice-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.invoice-section label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.invoice-display {
+    display: flex;
+    gap: 8px;
+}
+
+.invoice-textarea {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    background: #fafbfc;
+    color: #1a1a2e;
+    resize: none;
+    height: 80px;
+    word-break: break-all;
+}
+
+.secondary-button {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+}
+
+.secondary-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5a6268 0%, #495057 100%) !important;
+    box-shadow: 0 8px 24px rgba(108, 117, 125, 0.4) !important;
 }
 
 /* Error Page */
@@ -680,6 +811,21 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+}
+
+.submit-button .spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Desktop responsive */
