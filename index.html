@@ -9,30 +9,101 @@
 </head>
 
 <body>
-    <div class="container">
+    <!-- Main app container -->
+    <main id="app" class="container">
+        <!-- Initial loading state shown before JS loads -->
         <div class="header">
             <div class="bitcoin-symbol">₿</div>
             <h1>Bitcoin POS</h1>
         </div>
+        <div class="loading-initial">
+            <p>Loading...</p>
+        </div>
+    </main>
+
+    <!-- Setup Page Template -->
+    <template id="setup-page-template">
+        <div class="header">
+            <div class="bitcoin-symbol">₿</div>
+            <h1>Bitcoin POS</h1>
+            <p class="subtitle">Configure your Point of Sale</p>
+        </div>
+
+        <form id="setup-form" class="setup-form">
+            <div class="form-group">
+                <label for="descriptor">CT Descriptor</label>
+                <textarea id="descriptor" name="descriptor" class="descriptor-input"
+                    placeholder="ct(slip77(...),wpkh([fingerprint/84'/1'/0']xpub.../0/*))" rows="4" required></textarea>
+                <small class="form-hint">Enter your Liquid confidential transactions descriptor</small>
+            </div>
+
+            <div class="form-group">
+                <label for="currency">Currency</label>
+                <select id="currency" name="currency" class="currency-select" required>
+                    <option value="USD">🇺🇸 USD - US Dollar</option>
+                    <option value="EUR">🇪🇺 EUR - Euro</option>
+                    <option value="CHF">🇨🇭 CHF - Swiss Franc</option>
+                </select>
+            </div>
+
+            <div id="setup-message" class="message"></div>
+
+            <button type="submit" id="generate-link" class="submit-button" disabled>
+                Generate POS Link
+            </button>
+        </form>
+
+        <div id="generated-link-section" class="generated-link-section" hidden>
+            <h2>Your POS Link</h2>
+            <div class="link-display">
+                <input type="text" id="generated-link" class="link-input" readonly>
+                <button type="button" id="copy-link" class="copy-button" title="Copy to clipboard">📋</button>
+            </div>
+            <div id="qr-container" class="qr-container">
+                <img id="qr-image" alt="QR Code"
+                    style="image-rendering: pixelated; border: 20px solid white; width: 280px; height: 280px;">
+            </div>
+            <p class="link-hint">Share this link with your staff to receive payments</p>
+            <a href="#" id="open-pos-link" class="open-pos-button">Open POS →</a>
+        </div>
+
+        <div class="wasm-status" id="wasm-status">
+            <span class="status-indicator loading"></span>
+            <span class="status-text">Loading WASM module...</span>
+        </div>
+    </template>
+
+    <!-- POS Page Template -->
+    <template id="pos-page-template">
+        <div class="header">
+            <div class="header-row">
+                <div class="bitcoin-symbol">₿</div>
+                <h1>Bitcoin POS</h1>
+                <a href="#" id="setup-link" class="setup-link" title="Back to Setup">⚙️</a>
+            </div>
+        </div>
 
         <div class="content-wrapper">
-            <div class="left-section">
-                <div class="currency-selector">
-                    <label for="currency">Currency</label>
-                    <select id="currency" class="currency-select">
-                        <option value="USD">🇺🇸 USD - US Dollar</option>
-                        <option value="EUR">🇪🇺 EUR - Euro</option>
-                    </select>
+            <section class="left-section">
+                <div class="input-mode-toggle">
+                    <button type="button" class="mode-button active" id="mode-fiat">Fiat</button>
+                    <button type="button" class="mode-button" id="mode-sats">Sats</button>
                 </div>
 
-                <div class="display">
+                <div class="display" id="primary-display">
                     <span class="amount-value" id="amount">0.00</span>
                     <span class="currency-code" id="currency-code">USD</span>
                 </div>
 
-                <div class="satoshi-display">
+                <div class="satoshi-display" id="secondary-display">
                     <span class="satoshi-value" id="satoshi-amount">0</span>
                     <span class="satoshi-symbol">sats</span>
+                </div>
+
+                <div class="rate-display" id="rate-display">
+                    <span class="rate-label">1 BTC =</span>
+                    <span class="rate-value" id="rate-value">--</span>
+                    <span class="rate-currency" id="rate-currency">USD</span>
                 </div>
 
                 <div class="description-section">
@@ -40,9 +111,9 @@
                     <input type="text" id="description" class="description-input"
                         placeholder="e.g., Coffee, Sandwich..." maxlength="100">
                 </div>
-            </div>
+            </section>
 
-            <div class="right-section">
+            <section class="right-section">
                 <div class="keypad">
                     <button class="key" data-value="1">1</button>
                     <button class="key" data-value="2">2</button>
@@ -63,9 +134,33 @@
                 </div>
 
                 <button class="submit-button" id="submit">Create Invoice</button>
-            </div>
+            </section>
         </div>
-    </div>
+
+        <div class="wasm-status" id="wasm-status">
+            <span class="status-indicator loading"></span>
+            <span class="status-text">Loading wallet...</span>
+        </div>
+
+        <footer class="pos-footer">
+            <span class="wallet-id" id="wallet-id" title="Wallet ID"></span>
+        </footer>
+    </template>
+
+    <!-- Error Page Template -->
+    <template id="error-page-template">
+        <div class="header">
+            <div class="bitcoin-symbol">₿</div>
+            <h1>Bitcoin POS</h1>
+        </div>
+
+        <div class="error-container">
+            <div class="error-icon">⚠️</div>
+            <h2>Invalid Configuration</h2>
+            <p class="error-message" id="error-message">The provided link is invalid or malformed.</p>
+            <a href="./" class="submit-button error-button">Go to Setup</a>
+        </div>
+    </template>
 
     <script src="bootstrap.js"></script>
 </body>

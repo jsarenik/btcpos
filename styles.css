@@ -5,8 +5,8 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -15,14 +15,367 @@ body {
 }
 
 .container {
-    background: white;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    max-width: 440px;
     width: 100%;
+    backdrop-filter: blur(10px);
 }
 
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.header h1 {
+    color: #1a1a2e;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.header .subtitle {
+    color: #6c757d;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+.header .bitcoin-symbol {
+    color: #f7931a;
+    font-size: 40px;
+    font-weight: bold;
+    text-shadow: 0 2px 8px rgba(247, 147, 26, 0.3);
+}
+
+
+.setup-link {
+    font-size: 20px;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    margin-left: auto;
+}
+
+.setup-link:hover {
+    opacity: 1;
+}
+
+/* Input mode toggle */
+.input-mode-toggle {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    background: #f1f3f4;
+    border-radius: 10px;
+    padding: 4px;
+}
+
+.mode-button {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #6c757d;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mode-button:hover {
+    color: #1a1a2e;
+}
+
+.mode-button.active {
+    background: white;
+    color: #1a1a2e;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* POS Footer */
+.pos-footer {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e9ecef;
+    text-align: center;
+}
+
+.pos-footer .wallet-id {
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    font-size: 11px;
+    color: #9ca3af;
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+/* Loading state */
+.loading-initial {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+/* Setup Form */
+.setup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: #1a1a2e;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-hint {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.descriptor-input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafbfc;
+}
+
+.descriptor-input:focus {
+    outline: none;
+    border-color: #f7931a;
+    box-shadow: 0 0 0 3px rgba(247, 147, 26, 0.15);
+}
+
+.currency-select {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    background: #fafbfc;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236c757d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+
+.currency-select:focus {
+    outline: none;
+    border-color: #f7931a;
+    box-shadow: 0 0 0 3px rgba(247, 147, 26, 0.15);
+}
+
+/* Message display */
+.message {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    display: none;
+}
+
+.message.error {
+    display: block;
+    background: #fff5f5;
+    color: #c53030;
+    border: 1px solid #feb2b2;
+}
+
+.message.success {
+    display: block;
+    background: #f0fff4;
+    color: #276749;
+    border: 1px solid #9ae6b4;
+}
+
+/* Generated Link Section */
+.generated-link-section {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 2px solid #e9ecef;
+}
+
+.generated-link-section h2 {
+    font-size: 18px;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.link-display {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.link-input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    background: #fafbfc;
+    color: #1a1a2e;
+}
+
+.copy-button {
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    background: #fafbfc;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s;
+}
+
+.copy-button:hover {
+    background: #e9ecef;
+}
+
+.copy-button:active {
+    transform: scale(0.95);
+}
+
+.qr-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.qr-container img {
+    border-radius: 8px;
+}
+
+.link-hint {
+    text-align: center;
+    color: #6c757d;
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+
+.open-pos-button {
+    display: block;
+    text-align: center;
+    padding: 14px 24px;
+    background: #1a1a2e;
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.open-pos-button:hover {
+    background: #16213e;
+    transform: translateY(-2px);
+}
+
+/* WASM Status */
+.wasm-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.wasm-status.hidden {
+    display: none;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #6c757d;
+}
+
+.status-indicator.loading {
+    background: #ffc107;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-indicator.ready {
+    background: #28a745;
+}
+
+.status-indicator.error {
+    background: #dc3545;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Error Page */
+.error-container {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.error-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.error-container h2 {
+    color: #1a1a2e;
+    margin-bottom: 12px;
+}
+
+.error-message {
+    color: #6c757d;
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+.error-button {
+    display: inline-block;
+    text-decoration: none;
+}
+
+/* POS Page Styles */
 .content-wrapper {
     display: flex;
     flex-direction: column;
@@ -37,141 +390,132 @@ body {
     order: 2;
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.header h1 {
-    color: #333;
-    font-size: 24px;
-    margin-bottom: 5px;
-}
-
-.header .bitcoin-symbol {
-    color: #f7931a;
-    font-size: 36px;
-    font-weight: bold;
-}
-
-.currency-selector {
-    margin-bottom: 20px;
-}
-
-.currency-selector label {
-    display: block;
-    color: #6c757d;
-    font-size: 14px;
-    margin-bottom: 8px;
-    font-weight: 500;
-}
-
-.currency-select {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 16px;
-    font-family: inherit;
-    background: white;
-    cursor: pointer;
-    transition: border-color 0.2s;
-}
-
-.currency-select:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
 .display {
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #dee2e6;
+    border-radius: 14px;
     padding: 20px;
     margin-bottom: 10px;
     display: flex;
     justify-content: flex-end;
     align-items: baseline;
+    transition: all 0.2s;
 }
 
-.currency-symbol {
+.display.primary-mode {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-color: #dee2e6;
+}
+
+.display.secondary-mode {
+    background: #f1f3f4;
+    border-color: #e9ecef;
+    padding: 14px 20px;
+}
+
+.display.secondary-mode .amount-value {
+    font-size: 20px;
     color: #6c757d;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 5px;
 }
 
-.amount {
-    color: #212529;
-    font-size: 36px;
-    font-weight: bold;
-    font-family: 'Courier New', monospace;
-    display: flex;
-    align-items: baseline;
-    justify-content: flex-end;
+.display.secondary-mode .currency-code {
+    font-size: 14px;
 }
 
 .amount-value {
     text-align: right;
     min-width: 150px;
-    color: #212529;
+    color: #1a1a2e;
     font-size: 36px;
     font-weight: bold;
-    font-family: 'Courier New', monospace;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
 }
 
 .currency-code {
     font-size: 18px;
     margin-left: 8px;
     color: #6c757d;
-    font-weight: 500;
+    font-weight: 600;
     min-width: 50px;
     flex-shrink: 0;
 }
 
 .satoshi-display {
-    background: #fff3cd;
-    border: 2px solid #ffc107;
-    border-radius: 10px;
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+    border: 2px solid #f7931a;
+    border-radius: 14px;
     padding: 15px 20px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     display: flex;
     justify-content: flex-end;
     align-items: baseline;
+    transition: all 0.2s;
 }
 
-.satoshi-label {
-    color: #856404;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 5px;
+.satoshi-display.primary-mode {
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+    border-color: #f7931a;
+    padding: 20px;
 }
 
-.satoshi-amount {
-    color: #856404;
-    font-size: 24px;
-    font-weight: bold;
-    font-family: 'Courier New', monospace;
-    display: flex;
-    align-items: baseline;
-    justify-content: flex-end;
+.satoshi-display.primary-mode .satoshi-value {
+    font-size: 36px;
+}
+
+.satoshi-display.primary-mode .satoshi-symbol {
+    font-size: 18px;
+}
+
+.satoshi-display.secondary-mode {
+    background: #fffbeb;
+    border-color: #fcd34d;
+    padding: 14px 20px;
+}
+
+.satoshi-display.secondary-mode .satoshi-value {
+    font-size: 20px;
+    color: #92400e;
+}
+
+.satoshi-display.secondary-mode .satoshi-symbol {
+    font-size: 12px;
 }
 
 .satoshi-value {
     text-align: right;
     min-width: 150px;
-    color: #856404;
+    color: #b45309;
     font-size: 24px;
     font-weight: bold;
-    font-family: 'Courier New', monospace;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
 }
 
 .satoshi-symbol {
     font-size: 14px;
     margin-left: 8px;
-    color: #856404;
+    color: #b45309;
+    font-weight: 600;
     min-width: 50px;
     flex-shrink: 0;
+}
+
+.rate-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #f1f3f4;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.rate-value {
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    font-weight: 600;
+    color: #1a1a2e;
 }
 
 .description-section {
@@ -188,50 +532,54 @@ body {
 
 .description-input {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     border: 2px solid #e9ecef;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 16px;
     font-family: inherit;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafbfc;
 }
 
 .description-input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #f7931a;
+    box-shadow: 0 0 0 3px rgba(247, 147, 26, 0.15);
 }
 
+/* Keypad */
 .keypad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .keypad-actions {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 12px;
 }
 
 .key {
-    background: #f8f9fa;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     border: 2px solid #e9ecef;
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 18px;
     font-size: 24px;
     font-weight: 600;
-    color: #333;
+    color: #1a1a2e;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.15s;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
 
 .key:hover {
-    background: #e9ecef;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .key:active {
@@ -244,64 +592,72 @@ body {
 }
 
 .key.secondary {
-    background: #6c757d;
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
     color: white;
-    border-color: #6c757d;
-}
-
-.key.secondary:hover {
-    background: #5a6268;
     border-color: #5a6268;
 }
 
+.key.secondary:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+}
+
 .key.secondary:active {
-    background: #545b62;
+    background: #495057;
 }
 
 .key.danger {
-    background: #dc3545;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
     color: white;
-    border-color: #dc3545;
+    border-color: #c82333;
 }
 
 .key.danger:hover {
-    background: #c82333;
-    border-color: #c82333;
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
 }
 
 .key.danger:active {
     background: #bd2130;
 }
 
+/* Submit Button */
 .submit-button {
     width: 100%;
-    padding: 20px;
-    background: #f7931a;
+    padding: 18px;
+    background: linear-gradient(135deg, #f7931a 0%, #e8830f 100%);
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 24px;
-    font-weight: 600;
+    border-radius: 14px;
+    font-size: 20px;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.submit-button:hover {
-    background: #e8830f;
+.submit-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e8830f 0%, #d97706 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(247, 147, 26, 0.4);
+    box-shadow: 0 8px 24px rgba(247, 147, 26, 0.4);
 }
 
-.submit-button:active {
+.submit-button:active:not(:disabled) {
     transform: translateY(0);
 }
 
 .submit-button:disabled {
-    background: #adb5bd;
+    background: linear-gradient(135deg, #adb5bd 0%, #9ca3af 100%);
     cursor: not-allowed;
     transform: none;
 }
 
+.submit-button .button-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Desktop responsive */
 @media (min-width: 1024px) {
     .container {
         max-width: 1000px;
@@ -309,7 +665,7 @@ body {
 
     .content-wrapper {
         flex-direction: row;
-        gap: 30px;
+        gap: 32px;
         align-items: flex-start;
     }
 
@@ -324,35 +680,33 @@ body {
         display: flex;
         flex-direction: column;
     }
-
-    .header {
-        margin-bottom: 30px;
-    }
-
-    .keypad {
-        margin-bottom: 12px;
-    }
-
-    .keypad-actions {
-        margin-bottom: 12px;
-    }
-
-    .submit-button {
-        margin-top: 0;
-    }
 }
 
+/* Mobile responsive */
 @media (max-width: 480px) {
-    .container {
-        padding: 20px;
+    body {
+        padding: 12px;
     }
 
-    .amount {
+    .container {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .amount-value {
         font-size: 28px;
     }
 
     .key {
-        padding: 16px;
+        padding: 14px;
         font-size: 20px;
     }
+
+    .submit-button {
+        padding: 16px;
+        font-size: 18px;
+    }
 }
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');

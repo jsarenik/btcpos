@@ -10,6 +10,8 @@ const _state: {
     wollet: lwk.Wollet | null;
     currencyCode: lwk.CurrencyCode | null;
     boltzSession: lwk.BoltzSession | null;
+    exchangeRate: number | null;
+    wasmReady: boolean;
 } = {
     // Prices fetcher for exchange rates
     pricesFetcher: null,
@@ -22,6 +24,12 @@ const _state: {
 
     // Boltz session for lightning swaps
     boltzSession: null,
+
+    // Current exchange rate (BTC price in the selected currency)
+    exchangeRate: null,
+
+    // Whether WASM module is loaded and ready
+    wasmReady: false,
 };
 
 /**
@@ -60,6 +68,16 @@ export function publish(eventName: string, data: any): void {
     if (subscribers) {
         subscribers.forEach(callback => callback(data));
     }
+}
+
+// WASM ready state management
+export function isWasmReady(): boolean {
+    return _state.wasmReady;
+}
+
+export function setWasmReady(ready: boolean): void {
+    _state.wasmReady = ready;
+    publish('wasm-ready', ready);
 }
 
 // PricesFetcher state management
@@ -106,3 +124,13 @@ export function setBoltzSession(boltzSession: lwk.BoltzSession | null): lwk.Bolt
     return _state.boltzSession;
 }
 
+// Exchange rate state management
+export function getExchangeRate(): number | null {
+    return _state.exchangeRate;
+}
+
+export function setExchangeRate(rate: number | null): number | null {
+    _state.exchangeRate = rate;
+    publish('exchange-rate-changed', rate);
+    return _state.exchangeRate;
+}
