@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Bitcoin Point of Sale - Receive Lightning payments directly to your wallet with low fees. Easy setup, shareable links for staff, no middleman.">
+    <meta name="description"
+        content="Bitcoin Point of Sale - Receive Lightning payments directly to your wallet with low fees. Easy setup, shareable links for staff, no middleman.">
     <title>Bitcoin POS</title>
     <link rel="stylesheet" href="styles.css">
     <script defer data-domain="btcpos.cash" src="https://plausible.casatta.it/js/script.js"></script>
@@ -86,8 +87,10 @@
                 <button type="button" id="copy-link" class="copy-button" title="Copy to clipboard">📋</button>
             </div>
             <div id="qr-container" class="qr-container">
-                <img id="qr-image" alt="QR Code"
-                    style="image-rendering: pixelated; border: 20px solid white; width: 280px; height: 280px;">
+                <a id="qr-link" href="#" target="_blank">
+                    <img id="qr-image" alt="QR Code"
+                        style="image-rendering: pixelated; border: 20px solid white; width: 280px; height: 280px;">
+                </a>
             </div>
             <p class="link-hint">Share this link with your staff to receive payments</p>
             <a href="#" id="open-pos-link" class="open-pos-button">Open POS →</a>
@@ -194,8 +197,10 @@
             </div>
 
             <div class="qr-section">
-                <img id="invoice-qr" alt="Lightning Invoice QR"
-                    style="image-rendering: pixelated; border: 16px solid white; width: 240px; height: 240px;">
+                <a id="invoice-qr-link" href="#">
+                    <img id="invoice-qr" alt="Lightning Invoice QR"
+                        style="image-rendering: pixelated; border: 16px solid white; width: 240px; height: 240px;">
+                </a>
             </div>
 
             <div class="invoice-section">

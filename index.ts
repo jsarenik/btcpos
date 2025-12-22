@@ -297,6 +297,7 @@ function initSetupPage(): void {
     const generatedLinkInput = document.getElementById('generated-link') as HTMLInputElement;
     const copyButton = document.getElementById('copy-link') as HTMLButtonElement;
     const qrImage = document.getElementById('qr-image') as HTMLImageElement;
+    const qrLink = document.getElementById('qr-link') as HTMLAnchorElement;
     const openPosLink = document.getElementById('open-pos-link') as HTMLAnchorElement;
 
     // Load saved form data
@@ -393,6 +394,7 @@ function initSetupPage(): void {
             // Generate QR code
             const qrUri = lwk.stringToQr(posLink);
             qrImage.src = qrUri;
+            qrLink.href = posLink;
 
             generatedSection.hidden = false;
 
@@ -900,6 +902,7 @@ function initReceivePage(invoice: lwk.InvoiceResponse, satoshis: number, fiatAmo
     const receiveSats = document.getElementById('receive-sats') as HTMLSpanElement;
     const receiveFiat = document.getElementById('receive-fiat') as HTMLSpanElement;
     const invoiceQr = document.getElementById('invoice-qr') as HTMLImageElement;
+    const invoiceQrLink = document.getElementById('invoice-qr-link') as HTMLAnchorElement;
     const invoiceText = document.getElementById('invoice-text') as HTMLTextAreaElement;
     const copyInvoiceButton = document.getElementById('copy-invoice') as HTMLButtonElement;
     const backToPosButton = document.getElementById('back-to-pos') as HTMLButtonElement;
@@ -919,6 +922,7 @@ function initReceivePage(invoice: lwk.InvoiceResponse, satoshis: number, fiatAmo
     const lightningUri = `lightning:${bolt11.toUpperCase()}`;
     const qrUri = lwk.stringToQr(lightningUri);
     invoiceQr.src = qrUri;
+    invoiceQrLink.href = lightningUri;
 
     // Display invoice text (lowercase for copy/paste)
     invoiceText.value = bolt11;
