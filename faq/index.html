@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Bitcoin POS</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='72' font-size='72' font-weight='bold' fill='%23f7931a' text-anchor='middle'>₿</text></svg>">
+    <link rel="stylesheet" href="../styles.css">
+    <script defer data-domain="btcpos.cash" src="https://plausible.casatta.it/js/script.js"></script>
+</head>
+
+<body>
+    <main class="container">
+        <header class="header">
+            <a href="../" class="back-link">← Back to Setup</a>
+            <div class="bitcoin-symbol">₿</div>
+            <h1>Frequently Asked Questions</h1>
+            <p class="subtitle">Everything you need to know about Bitcoin POS</p>
+        </header>
+
+        <section class="faq-section">
+            <div class="faq-item">
+                <h2>What is btcpos.cash ?</h2>
+                <p>btcpos.cash is a point-of-sale system that allows merchants to easily accept Bitcoin lightning
+                    payments
+                    without running a node. This is possible by leveraging the Liquid network and the Boltz exchange.
+                </p>
+            </div>
+
+            <div class="faq-item">
+                <h2>How does it work?</h2>
+                <p>Bitcoin POS is configured with your Liquid wallet's confidential descriptor (<a
+                        href="">ELIP-151</a>),
+                    See our <a href="../docs/">CT Descriptor Tutorials</a> for supported wallet.
+                    The CT descriptor allows to generate wallet addresses but not sign transactions and spend funds.
+                    It is what is called a watch-only wallet.
+                    With the wallet address an invoice is createad using <a href="https://boltz.exchange/">Boltz</a>
+                    exchange,
+                    this is the step that requires the payment of the fees.</p>
+            </div>
+
+        </section>
+
+        <footer class="docs-footer">
+            <p>Can't find what you're looking for? Check out our <a href="../docs/">CT Descriptor Tutorials</a> or
+                contact us for support.
+            </p>
+        </footer>
+    </main>
+</body>
+
+</html>
