@@ -47,6 +47,16 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Skip webpack dev server hot-update files
+    if (url.pathname.includes('hot-update') || url.pathname.includes('.hot-update.')) {
+        return;
+    }
+
+    // Skip websocket requests
+    if (event.request.url.startsWith('ws://') || event.request.url.startsWith('wss://')) {
+        return;
+    }
+
     // For same-origin requests: try cache first, fall back to network
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
