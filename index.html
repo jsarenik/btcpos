@@ -285,11 +285,16 @@
             }
         })();
 
-        // Register service worker for offline support
+        // Register service worker for offline support (production only)
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(() => console.log('Service Worker registered'))
-                .catch((err) => console.log('Service Worker registration failed:', err));
+            const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+            if (!isLocalhost) {
+                // In production: register service worker
+                navigator.serviceWorker.register('./sw.js')
+                    .then(() => console.log('Service Worker registered'))
+                    .catch((err) => console.log('Service Worker registration failed:', err));
+            }
         }
     </script>
     <script src="bootstrap.js"></script>
