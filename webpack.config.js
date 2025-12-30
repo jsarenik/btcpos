@@ -9,7 +9,13 @@ module.exports = (env, argv) => ({
     },
     mode: argv.mode || "development",
     plugins: [
-        new CopyWebpackPlugin({ patterns: ["index.html", "styles.css", "manifest.json", "sw.js", { from: "docs", to: "docs" }, { from: "faq", to: "faq" }] })
+        new CopyWebpackPlugin({
+            patterns: ["index.html", "styles.css",
+                "manifest.json", "sw.js",
+                "sitemap.xml", "robots.txt",
+                { from: "docs", to: "docs" },
+                { from: "faq", to: "faq" }]
+        })
     ],
     experiments: {
         asyncWebAssembly: true,
