@@ -3,6 +3,5 @@ node_modules/
 dist/
 *.log
 .DS_Store
-referral_stats/.env
-referral_stats/target
+referral_stats/
 
